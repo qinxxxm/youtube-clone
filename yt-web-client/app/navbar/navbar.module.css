@@ -4,3 +4,15 @@
     align-items: center;
     padding: 1em;
 }
+
+.profile_picture {
+    border-radius: 50%;
+}
+
+.nav_right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+

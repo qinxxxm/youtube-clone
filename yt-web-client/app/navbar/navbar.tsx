@@ -31,8 +31,19 @@ export default function Navbar() {
           alt="Youtube Logo"
         />
       </Link>
-      {user && <Upload />}
-      <SignIn user={user} />
+      <div className={styles.nav_right}>
+        {user && <Upload />}
+        {user && (
+          <Image
+            width={40}
+            height={40}
+            src={user.photoURL!}
+            alt="Profile Picture"
+            className={styles.profile_picture}
+          />
+        )}
+        <SignIn user={user} />
+      </div>
     </nav>
   );
 }
