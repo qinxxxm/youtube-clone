@@ -21,10 +21,12 @@ const videoCollectionId = "videos";
 export interface Video {
   id?: string,
   uid?: string,
-  fileName?: string,
-  status?: 'processing' | 'processed',
+  photoURL?: string,
+  displayName?: string,
+  videoFileName?: string,
+  thumbnailFileName?: string,
+  status?: "before processing" | "processing" | "processed",
   title?: string,
-  description?: string,
 }
 /**
 * @param videoId - The ID of the video to retrieve.
@@ -53,7 +55,7 @@ export function setVideo(videoId: string, video: Video) {
 */
 export async function isVideoNew(videoId: string) {
   const video = await getVideo(videoId);
-  return video?.status === undefined; // if its not new it will be either processing or processed
+  return video?.status === "before processing"; // if its not before processing it will be either processing or processed, thus we dont want to do anything, ignore the pub sub call
 }
 
 

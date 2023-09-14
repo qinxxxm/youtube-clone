@@ -19,15 +19,18 @@ initializeApp();
 const firestore = new Firestore();
 const storage = new Storage();
 const rawVideoBucketName = "raw-videos-qx-test";
+const thumbnailBucketName = "thumbnail-qx-test";
 const videoCollectionId = "videos";
 
 export interface Video {
   id?: string,
   uid?: string,
-  fileName?: string,
+  photoURL?: string,
+  displayName?: string,
+  videoFileName?: string,
+  thumbnailFileName?: string,
   status?: "processing" | "processed",
   title?: string,
-  description?: string,
 }
 
 // Start writing functions
@@ -48,14 +51,16 @@ export const createUser = functions.auth.user().onCreate((user) => {
     photoUrl: user.photoURL,
   };
 
+  // evv
   firestore.collection("users").doc(user.uid).set(userInfo); // https://firebase.google.com/docs/firestore/manage-data/add-data
   logger.info("User Created: ${JSON.stringify(userInfo)}");
   return;
 });
 
 
-export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
-  // check if user is authenticated
+export const generateUploadUrl =
+onCall({maxInstances: 5}, async (request) => {
+// check if user is authenticated
   // usually we will pass in credentials
   // but since we are using firebaseit will be in the request
   if (!request.auth) {
@@ -65,25 +70,73 @@ export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
     );
   }
 
-  const auth = request.auth;
+  // const auth = request.auth;
   const data = request.data;
   const bucket = storage.bucket(rawVideoBucketName);
 
-  // Generate unique file name
-  const fileName = `${auth.uid}-${Date.now()}.${data.fileExtention}`;
+  // // Generate unique file name
+  // const fileName = `${auth.uid}-${Date.now()}.${data.fileExtention}`;
 
   // get a v4 signed URL for uploading file
   // https://cloud.google.com/storage/docs/samples/storage-generate-upload-signed-url-v4#storage_generate_upload_signed_url_v4-nodejs
-  const [url] = await bucket.file(fileName).getSignedUrl({
+  // const [url] = await bucket.file(fileName).getSignedUrl({
+  const [videoUrl] = await bucket.file(data.videoFileName).getSignedUrl({
     version: "v4",
     action: "write",
     expires: Date.now() + 15 * 60 * 1000, // 15 minutes
   });
 
-  return {fileName, url};
+  const [thumbnailUrl] = await storage.bucket(thumbnailBucketName)
+    .file(data.thumbnailFileName).getSignedUrl({
+      version: "v4",
+      action: "write",
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    });
+  return {videoUrl, thumbnailUrl};
 });
 
-export const getVideos = onCall({maxInstances: 1}, async () => {
+/**
+ * This function uploads the imageurl to firestore
+ */
+
+export const uploadThumbnail = onCall({maxInstances: 5}, async (request) => {
+  if (!request.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+  try {
+    const thumbnailFileName = request.data.thumbnailFileName;
+    const videoId =
+    request.data.videoId; // this is the doc id, as well as the video id
+
+    // Set the image to be publicly readable
+    await storage.bucket(thumbnailBucketName)
+      .file(thumbnailFileName).makePublic();
+
+
+    // add video info to firestore
+    await firestore.collection(videoCollectionId).doc(videoId).set({
+      id: videoId,
+      uid: videoId.split("-")[0],
+      status: "before processing",
+      thumbnailFileName: `https://storage.googleapis.com/${thumbnailBucketName}/${thumbnailFileName}`,
+      title: request.data.title,
+      displayName: request.data.displayName,
+      photoURL: request.data.photoURL,
+    });
+  } catch (error: any) {
+    console.log(error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Internal Server Error"
+    );
+  }
+});
+
+
+export const getVideos = onCall({maxInstances: 5}, async () => {
   const querySnapshot =
     await firestore.collection(videoCollectionId).limit(10).get();
   return querySnapshot.docs.map((doc) => doc.data());

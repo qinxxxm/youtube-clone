@@ -1,7 +1,7 @@
 .uploadInput {
     display: none; /* Hide the default input */
   }
-  
+
   .uploadButton {
     display: flex; /* Use Flexbox to center the text */
     justify-content: center; /* Center text horizontally */
@@ -15,8 +15,7 @@
     font-size: 10px;
     padding: 0.4em;
   }
-  
+
   .uploadButton:hover {
     background-color: rgb(230, 230, 230);
   }
-  
