@@ -184,7 +184,15 @@ export default function MyVideos() {
             .map((video) => (
               <div className={styles.video_container} key={video.id}>
                 <Link
-                  href={`/watch?v=${video.videoFileName}`}
+                  href={{
+                    pathname: "/watch",
+                    query: {
+                      v: video.videoFileName,
+                      t: video.title,
+                      n: video.displayName,
+                      p: video.photoURL,
+                    },
+                  }}
                   key={video.id}
                   className={styles.thumbnail}
                 >
@@ -199,7 +207,9 @@ export default function MyVideos() {
                 </Link>
                 <div className={styles.video_bottom_section}>
                   <div className={styles.left_section}>
-                    <Link href="/">
+                    <Link
+                      href={`/channel?u=${video.uid}&n=${video.displayName}`}
+                    >
                       <Image
                         src={video.photoURL!}
                         alt="/thumbnail.png"
@@ -210,12 +220,23 @@ export default function MyVideos() {
                     </Link>
                     <div className={styles.video_details}>
                       <Link
-                        href={`/watch?v=${video.videoFileName}`}
+                        href={{
+                          pathname: "/watch",
+                          query: {
+                            v: video.videoFileName,
+                            t: video.title,
+                            n: video.displayName,
+                            p: video.photoURL,
+                          },
+                        }}
                         className={styles.video_title}
                       >
                         {video.title}
                       </Link>
-                      <Link href="/" className={styles.video_channel_name}>
+                      <Link
+                        href={`/channel?u=${video.uid}&n=${video.displayName}`}
+                        className={styles.video_channel_name}
+                      >
                         {video.displayName}
                       </Link>
                     </div>

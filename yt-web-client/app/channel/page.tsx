@@ -67,25 +67,32 @@ export default function Channel() {
                 />
               </Link>
               <div className={styles.video_bottom_section}>
-                <Link href={`/channel?u=${video.uid}`}>
-                  <Image
-                    src={video.photoURL!}
-                    alt="/thumbnail.png"
-                    className={styles.channel_icon}
-                    width={40}
-                    height={40}
-                  />
-                </Link>
+                <Image
+                  src={video.photoURL!}
+                  alt="/thumbnail.png"
+                  className={styles.channel_icon}
+                  width={40}
+                  height={40}
+                />
+
                 <div className={styles.video_details}>
                   <Link
-                    href={`/watch?v=${video.videoFileName}`}
+                    href={{
+                      pathname: "/watch",
+                      query: {
+                        v: video.videoFileName,
+                        t: video.title,
+                        n: video.displayName,
+                        p: video.photoURL,
+                      },
+                    }}
                     className={styles.video_title}
                   >
                     {video.title}
                   </Link>
-                  <Link href="/" className={styles.video_channel_name}>
+                  <div className={styles.video_channel_name}>
                     {video.displayName}
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>
