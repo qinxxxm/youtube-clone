@@ -1,3 +1,4 @@
 # youtube-clone
 
-This project is primarily to learn more about google cloud and firebase
+This project main focus is to learn more about Google Cloud Platform and Firebase.
+Worked with Google Cloud Storage, Pub/Sub, Cloud Run, Firebase Functions, Firestore.
