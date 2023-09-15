@@ -36,14 +36,14 @@ export default function Channel() {
   return (
     <div className={styles.videos}>
       {videos && uid && (
-        <h1 style={{ marginBottom: "20px" }}>{displayName}'s Videos</h1>
+        <h1 style={{ marginBottom: "20px" }}>{displayName} Videos</h1>
       )}
       <section className={styles.video_section}>
         {videos
           .filter((video) => video.status === "processed")
           .filter((video) => video.uid === uid)
           .map((video) => (
-            <div className={styles.video_container}>
+            <div className={styles.video_container} key={video.id}>
               <Link
                 href={{
                   pathname: "/watch",

@@ -26,11 +26,14 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm install --only=production
+RUN npm install --only=production 
 
 # Copy built app from the builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+
+#added this after fetching images failed (THIS WAS THE SOLUTION)
+COPY --from=builder /app/next.config.js ./
 
 # Expose the listening port
 EXPOSE 3000

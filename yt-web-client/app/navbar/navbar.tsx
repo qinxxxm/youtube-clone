@@ -6,7 +6,6 @@ import SignIn from "./sign-in";
 import { onAuthStateChangedHelper } from "../utils/firebase/firebase";
 import { Fragment, useEffect, useState } from "react";
 import { User } from "firebase/auth";
-import Upload from "./upload";
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null); //without the generics there will be error

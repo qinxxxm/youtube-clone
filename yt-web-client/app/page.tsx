@@ -12,7 +12,7 @@ export default async function Home() {
         {videos
           .filter((video) => video.status === "processed")
           .map((video) => (
-            <div className={styles.video_container}>
+            <div className={styles.video_container} key={video.id}>
               <Link
                 href={{
                   pathname: "/watch",

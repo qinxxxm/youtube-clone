@@ -26,10 +26,10 @@ const firebaseConfig = {
   appId: "1:178114160758:web:893e540378d5ae30d55757"
 };
 
-console.log("testing top level code when import, this line should be logged to console when app starts, as we imported functions from this file");
+// console.log("testing top level code when import, this line should be logged to console when app starts, as we imported functions from this file");
 //this explains how firebase is being initialised, when we visit a page with any imported functions from this file, initaliseApp will be called, and firebase will be initialised
 
-console.log(firebaseConfig);
+// console.log(firebaseConfig);
 // https://firebase.google.com/docs/auth/web/start?authuser=5
 // https://firebase.google.com/docs/auth/web/start
 // Initialize Firebase
@@ -65,4 +65,4 @@ export function onAuthStateChangedHelper(callback: (user:User | null) => void) {
   // returns unsubscribe function, and whenever the auth state changes, the callback function will be called (callbackfunction is just the setState thing in navbar.tsx)
 }
 
-console.log("testing top level code when import, this line is also logged to console, it is at the end of file");
+// console.log("testing top level code when import, this line is also logged to console, it is at the end of file");
