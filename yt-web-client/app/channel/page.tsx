@@ -1,16 +1,47 @@
-import styles from "./page.module.css";
-import { getVideos } from "./utils/firebase/functions";
+"use client";
+
+import styles from "./channel.module.css";
+import { getVideos } from "../utils/firebase/functions";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
-  const videos = await getVideos();
+export interface Video {
+  id?: string;
+  uid?: string;
+  photoURL?: string;
+  displayName?: string;
+  videoFileName?: string;
+  thumbnailFileName?: string;
+  status?: "processing" | "processed";
+  title?: string;
+}
+
+export default function Channel() {
+  const [videos, setVideos] = useState<Video[]>([]);
+  const uid = useSearchParams().get("u");
+  const displayName = useSearchParams().get("n");
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      //doing this is better than just using await in our useffect, to allow our cleanup function to still run
+      const videoss = await getVideos();
+      setVideos(videoss!);
+    };
+
+    fetchVideos();
+  }, []);
 
   return (
-    <main className={styles.videos}>
+    <div className={styles.videos}>
+      {videos && (
+        <h1 style={{ marginBottom: "20px" }}>{displayName}'s Channel</h1>
+      )}
       <section className={styles.video_section}>
         {videos
           .filter((video) => video.status === "processed")
+          .filter((video) => video.uid === uid)
           .map((video) => (
             <div className={styles.video_container}>
               <Link
@@ -21,10 +52,8 @@ export default async function Home() {
                     t: video.title,
                     n: video.displayName,
                     p: video.photoURL,
-                    u: video.uid,
                   },
                 }}
-                //this works too href={`/watch?v=${video.videoFileName}&t=${video.title}&n=${video.displayName}&p=${video.photoURL}`}
                 key={video.id}
                 className={styles.thumbnail}
               >
@@ -38,7 +67,7 @@ export default async function Home() {
                 />
               </Link>
               <div className={styles.video_bottom_section}>
-                <Link href={`/channel?u=${video.uid}&n=${video.displayName}`}>
+                <Link href={`/channel?u=${video.uid}`}>
                   <Image
                     src={video.photoURL!}
                     alt="/thumbnail.png"
@@ -49,41 +78,19 @@ export default async function Home() {
                 </Link>
                 <div className={styles.video_details}>
                   <Link
-                    href={`/watch?v=${video.videoFileName}&t=${video.title}&n=${video.displayName}&p=${video.photoURL}&u=${video.uid}`}
+                    href={`/watch?v=${video.videoFileName}`}
                     className={styles.video_title}
                   >
                     {video.title}
                   </Link>
-                  <Link
-                    href={`/channel?u=${video.uid}&n=${video.displayName}`}
-                    className={styles.video_channel_name}
-                  >
+                  <Link href="/" className={styles.video_channel_name}>
                     {video.displayName}
                   </Link>
-                  {/* <div className={styles.video_metadata}>
-                  <span>1 week ago</span>
-                </div> */}
                 </div>
               </div>
             </div>
           ))}
       </section>
-    </main>
-    // <main>
-    //   {videos.map((video) => (
-    //     <Link href={`/watch?v=${video.fileName}`} key={video.id}>
-    //       <Image
-    //         src={"/thumbnail.png"}
-    //         alt="video"
-    //         width={120}
-    //         height={80}
-    //         className={styles.thumbnail}
-    //       />
-    //     </Link>
-    //   ))}
-    // </main>
+    </div>
   );
 }
-
-// if we didnt revalidate, the page would just cache the videos (cache the getVideo() function call), and not update the page if new videos is uploaded
-// export const revalidate = 30; // https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#segment-level-caching

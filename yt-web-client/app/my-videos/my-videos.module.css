@@ -58,6 +58,20 @@
     margin: 20px 0;
   }
 
+  .waiting {
+    padding: 10px;
+    background: #c7d1eb;
+    border: 1px solid #0e4ed8;
+    color: #2a65e4;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+
+  .loading {
+    position: absolute;
+    margin-left: 10px;
+  }
+
 
 /* video section css */
 
