@@ -141,3 +141,31 @@ export const getVideos = onCall({maxInstances: 5}, async () => {
     await firestore.collection(videoCollectionId).limit(10).get();
   return querySnapshot.docs.map((doc) => doc.data());
 });
+
+export const deleteVideo = onCall({maxInstances: 5}, async (request) => {
+  try {
+    if (!request.auth) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "The function must be called while authenticated."
+      );
+    }
+
+    // Check if the video exists
+    const videoId = request.data.videoId;
+    const videoRef = firestore.collection(videoCollectionId).doc(videoId);
+    const videoSnapshot = await videoRef.get();
+    if (!videoSnapshot.exists) {
+      throw new functions.https.HttpsError("not-found", "Video not found.");
+    }
+
+    // Perform the deletion
+    await videoRef.delete();
+
+    return {success: true, message: "Video deleted successfully"};
+  } catch (error) {
+    // Handle errors and return error response
+    console.error("Error:", error);
+    throw new functions.https.HttpsError("internal", "Internal server error");
+  }
+});

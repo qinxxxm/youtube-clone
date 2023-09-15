@@ -2,11 +2,11 @@
 import {httpsCallable} from 'firebase/functions';
 import {functions} from './firebase';
 import { User } from 'firebase/auth';
-import { fileURLToPath } from 'url';
 
 const generateUploadUrl = httpsCallable(functions, 'generateUploadUrl');
 const uploadThumbnail = httpsCallable(functions, 'uploadThumbnail');
 const getVideosFunction = httpsCallable(functions, 'getVideos');
+const deleteVideoFunction = httpsCallable(functions, 'deleteVideo');
 
 export interface Video {
     id?: string,
@@ -93,4 +93,15 @@ export async function uploadVideo(title: String, videoFile: File, thumbnail: Fil
 export async function getVideos() {
     const response: any = await getVideosFunction();
     return response.data as Video[];
+}
+
+export async function deleteVideo(videoId: string) {
+try {
+    const response: any = await deleteVideoFunction({
+        videoId: videoId,
+    });
+    return response.data;
+} catch {
+    return {error: "error"};
+}
 }

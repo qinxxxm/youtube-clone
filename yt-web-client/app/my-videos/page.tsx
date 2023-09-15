@@ -3,10 +3,14 @@ import React, { useEffect, useState } from "react";
 import styles from "./my-videos.module.css";
 import { User } from "firebase/auth";
 import { onAuthStateChangedHelper } from "../utils/firebase/firebase";
-import { uploadVideo } from "../utils/firebase/functions";
-import { getVideos } from "../utils/firebase/functions";
+import {
+  getVideos,
+  uploadVideo,
+  deleteVideo,
+} from "../utils/firebase/functions";
 import Link from "next/link";
 import Image from "next/image";
+import { CustomModal } from "./modal";
 
 export interface Video {
   id?: string;
@@ -29,6 +33,7 @@ export default function MyVideos() {
   const [user, setUser] = useState<User | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [disabled, setDisabled] = useState(false);
+  const [modal, setModal] = useState(false);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -53,7 +58,7 @@ export default function MyVideos() {
     setSuccess("");
     setWaiting("");
 
-    // checks for if forrm is filled
+    // checks for if form is filled
     if (!title) {
       console.log("no title");
       setError("Please key in a title!");
@@ -107,6 +112,29 @@ export default function MyVideos() {
       return;
     }
     setThumbnailImage(e.target.files?.item(0));
+  };
+
+  const openModal = () => {
+    setModal(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const exitModalNo = () => {
+    setModal(false);
+    document.body.style.overflow = "unset";
+  };
+
+  const exitModalYes = async (videoId: string) => {
+    try {
+      // Call the deleteVideo function
+      await deleteVideo(videoId);
+      setVideos(videos.filter((video) => video.id !== videoId));
+      setModal(false);
+      document.body.style.overflow = "unset";
+    } catch (error) {
+      console.error("Error deleting video:", error);
+      alert(`Error deleting video: ${error}`);
+    }
   };
 
   return user ? (
@@ -170,29 +198,46 @@ export default function MyVideos() {
                   />
                 </Link>
                 <div className={styles.video_bottom_section}>
-                  <Link href="/">
-                    <Image
-                      src={video.photoURL!}
-                      alt="/thumbnail.png"
-                      className={styles.channel_icon}
-                      width={40}
-                      height={40}
-                    />
-                  </Link>
-                  <div className={styles.video_details}>
-                    <Link
-                      href={`/watch?v=${video.videoFileName}`}
-                      className={styles.video_title}
-                    >
-                      {video.title}
+                  <div className={styles.left_section}>
+                    <Link href="/">
+                      <Image
+                        src={video.photoURL!}
+                        alt="/thumbnail.png"
+                        className={styles.channel_icon}
+                        width={40}
+                        height={40}
+                      />
                     </Link>
-                    <Link href="/" className={styles.video_channel_name}>
-                      {video.displayName}
-                    </Link>
-                    {/* <div className={styles.video_metadata}>
-                  <span>1 week ago</span>
-                </div> */}
+                    <div className={styles.video_details}>
+                      <Link
+                        href={`/watch?v=${video.videoFileName}`}
+                        className={styles.video_title}
+                      >
+                        {video.title}
+                      </Link>
+                      <Link href="/" className={styles.video_channel_name}>
+                        {video.displayName}
+                      </Link>
+                    </div>
                   </div>
+
+                  <button className={styles.delete} onClick={openModal}>
+                    <Image
+                      className={styles.delete_icon}
+                      src="/delete-icon.png"
+                      alt="delete"
+                      width={22}
+                      height={25}
+                      sizes="100vw"
+                    />
+                  </button>
+                  {modal && (
+                    <CustomModal
+                      videoId={video.id || ""}
+                      exitModalNo={exitModalNo}
+                      exitModalYes={exitModalYes}
+                    ></CustomModal>
+                  )}
                 </div>
               </div>
             ))}
@@ -201,3 +246,5 @@ export default function MyVideos() {
     </div>
   ) : null;
 }
+
+export const revalidate = 30;

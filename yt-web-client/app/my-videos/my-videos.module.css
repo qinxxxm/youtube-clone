@@ -75,9 +75,6 @@
 
 /* video section css */
 
-.videos {
-  
-}
 
   .video_section {
     display: grid;
@@ -94,8 +91,14 @@
 
 .video_bottom_section {
     display: flex;
-    align-items:flex-start;
+    justify-content: space-between;
     margin-top: 0.5rem;
+    align-items: center;
+}
+
+.left_section {
+  display: flex;
+  align-items:flex-start;
 }
 
 .thumbnail_img {
@@ -139,3 +142,12 @@
     color: #555;
     font-size: 14px;
 }
+
+.delete { 
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  border-style: none;
+}
+

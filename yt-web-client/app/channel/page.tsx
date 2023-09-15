@@ -35,8 +35,8 @@ export default function Channel() {
 
   return (
     <div className={styles.videos}>
-      {videos && (
-        <h1 style={{ marginBottom: "20px" }}>{displayName}'s Channel</h1>
+      {videos && uid && (
+        <h1 style={{ marginBottom: "20px" }}>{displayName}'s Videos</h1>
       )}
       <section className={styles.video_section}>
         {videos
