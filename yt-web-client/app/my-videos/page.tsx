@@ -63,7 +63,6 @@ export default function MyVideos() {
 
     // checks for if form is filled
     if (!title) {
-      console.log("no title");
       setError("Please key in a title!");
       return;
     }

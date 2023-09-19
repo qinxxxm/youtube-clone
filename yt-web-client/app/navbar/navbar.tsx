@@ -13,7 +13,6 @@ export default function Navbar() {
   useEffect(() => {
     const unsubscribe = onAuthStateChangedHelper((user) => {
       setUser(user);
-      console.log(user);
     }); //so this (user) => setUser(user) is called when the auth state changes
 
     //cleanup subscription to onAuthStateChange on unmount
