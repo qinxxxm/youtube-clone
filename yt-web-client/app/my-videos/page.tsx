@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./my-videos.module.css";
 import { User } from "firebase/auth";
 import { onAuthStateChangedHelper } from "../utils/firebase/firebase";
@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { CustomModal } from "./modal";
+import { cursorTo } from "readline";
 
 export interface Video {
   id?: string;
@@ -24,9 +25,11 @@ export interface Video {
 }
 
 export default function MyVideos() {
-  const [title, setTitle] = useState<String | null>(null);
+  const [title, setTitle] = useState<string>("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailImage, setThumbnailImage] = useState<File | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [waiting, setWaiting] = useState("");
@@ -85,6 +88,15 @@ export default function MyVideos() {
       setSuccess(
         "Video is now uploaded and is being processed to 360p in the server!"
       );
+      setTitle("");
+      setVideoFile(null);
+      setThumbnailImage(null);
+      if (videoInputRef.current) {
+        videoInputRef.current.value = "";
+      }
+      if (thumbnailInputRef.current) {
+        thumbnailInputRef.current.value = "";
+      }
       setDisabled(false);
       setTimeout(() => {
         setSuccess("");
@@ -142,13 +154,18 @@ export default function MyVideos() {
       <form className={styles.upload_form} onSubmit={handleSubmit}>
         <h2>Upload Video</h2>
         <label>Title:</label>
-        <input type="text" onChange={(e) => setTitle(e.target.value)} />
+        <input
+          type="text"
+          onChange={(e) => setTitle(e.target.value)}
+          value={title}
+        />
         <div className={styles.file}>
           <label>Choose a video:</label>
           <input
             type="file"
             onChange={handleVideoInput}
             accept="video/mp4,video/x-m4v,video/*"
+            ref={videoInputRef}
           />
         </div>
         <div className={styles.file}>
@@ -157,6 +174,7 @@ export default function MyVideos() {
             type="file"
             onChange={handleThumbnailImage}
             accept="image/png, image/jpeg"
+            ref={thumbnailInputRef}
           />
         </div>
         <button disabled={disabled}>Upload Video</button>
