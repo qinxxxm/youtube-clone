@@ -268,4 +268,4 @@ export default function MyVideos() {
   ) : null;
 }
 
-export const revalidate = 30;
+export const revalidate = 10;

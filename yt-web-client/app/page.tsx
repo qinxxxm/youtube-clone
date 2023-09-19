@@ -86,4 +86,4 @@ export default async function Home() {
 }
 
 // if we didnt revalidate, the page would just cache the videos (cache the getVideo() function call), and not update the page if new videos is uploaded
-export const revalidate = 30; // https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#segment-level-caching
+export const revalidate = 10; // https://nextjs.org/docs/app/building-your-application/data-fetching/fetching-caching-and-revalidating#segment-level-caching
